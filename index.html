@@ -141,6 +141,29 @@
             transform: rotateY(180deg);
         }
 
+        /* Toast Notification */
+        .toast {
+            visibility: hidden; /* Hidden by default */
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
         /* Media Queries for iPhone 12 Pro and similar devices */
         @media (max-width: 391px) {
             .mail-container {
@@ -188,8 +211,8 @@
                     (There's only one correct answer!)
                 </div>
                 <div class="buttons">
-                    <button class="button" onclick="showEmailInput(event)">Yes</button>
-                    <button class="button" onclick="showEmailInput(event)">Yes</button>
+                    <button class="button" onclick="celebrate(event); showEmailInput(event);">Yes</button>
+                    <button class="button" onclick="celebrate(event); showEmailInput(event);">Yes</button>
                 </div>
             </div>
         </div>
@@ -199,6 +222,12 @@
         <input type="email" class="email-input" id="email" placeholder="Enter your email" required>
         <button class="send-button" onclick="sendEmail()">Send</button>
     </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">A Valentine's Day link has been sent to your email! 💌</div>
+
+    <!-- Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <script>
         // Function to toggle mail rotation
@@ -218,17 +247,44 @@
             sendButton.style.display = 'block';
         }
 
+        // Function to show toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message; // Set the notification message
+            toast.classList.add('show'); // Show the toast
+
+            // Hide the toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Function to celebrate when "Yes" is clicked
+        function celebrate(event) {
+            event.stopPropagation(); // Prevent mail rotation
+
+            // Trigger confetti animation
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+            });
+
+            // Show a celebration toast
+            showToast('Yay! You said YES! 💖');
+        }
+
         // Function to simulate sending an email
         function sendEmail() {
             const email = document.getElementById('email').value;
 
             if (!email || !email.includes('@')) {
-                alert('Please enter a valid email address.');
+                showToast('Please enter a valid email address.');
                 return;
             }
 
-            // Simulate sending an email (replace with actual backend logic)
-            alert(`A Valentine's Day link has been sent to ${email}. Check your inbox! 💌`);
+            // Simulate sending an email
+            showToast(`A Valentine's Day link has been sent to ${email}. Check your inbox! 💌`);
 
             // Reset the email input and hide it
             document.getElementById('email').value = '';
